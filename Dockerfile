@@ -105,7 +105,29 @@ FROM server_dependencies AS server
 COPY autogpt_platform/backend /app/autogpt_platform/backend
 RUN poetry install --no-ansi --only-root
 
+# Create startup script that runs migrations first, then starts the service
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "🚀 AutoGPT Platform Startup Script"\n\
+echo "================================="\n\
+\n\
+# Check if migrations need to be run\n\
+echo "🔍 Checking database migrations..."\n\
+if poetry run prisma migrate status | grep -q "No pending migrations"; then\n\
+    echo "✅ Database migrations are up to date"\n\
+else\n\
+    echo "🔄 Running database migrations..."\n\
+    poetry run prisma generate\n\
+    poetry run prisma migrate deploy\n\
+    echo "✅ Database migrations completed successfully!"\n\
+fi\n\
+\n\
+echo "🎯 Starting AutoGPT Platform service..."\n\
+# Start the service based on the command\n\
+exec "$@"' > /app/startup.sh && chmod +x /app/startup.sh
+
 ENV PORT=8000
 
-# Default command - can be overridden by Render
+# Use the startup script as entrypoint
+ENTRYPOINT ["/app/startup.sh"]
 CMD ["poetry", "run", "rest"]
