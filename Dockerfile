@@ -97,6 +97,9 @@ FROM server_dependencies AS migrate
 COPY autogpt_platform/backend/schema.prisma /app/autogpt_platform/backend/
 COPY autogpt_platform/backend/migrations /app/autogpt_platform/backend/migrations
 
+# Default command for migrate stage - can be overridden by Render
+CMD ["sh", "-c", "poetry run prisma generate && poetry run prisma migrate deploy && echo 'Migrations completed successfully!' && exit 0"]
+
 FROM server_dependencies AS server
 
 COPY autogpt_platform/backend /app/autogpt_platform/backend
