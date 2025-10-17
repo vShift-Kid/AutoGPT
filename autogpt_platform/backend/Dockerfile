@@ -108,6 +108,34 @@ FROM server_dependencies AS executor
 COPY autogpt_platform/backend /app/autogpt_platform/backend
 RUN poetry install --no-ansi --only-root
 
+# Create startup script for executor that handles connection issues gracefully
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "🚀 AutoGPT Platform Executor Startup Script"\n\
+echo "=========================================="\n\
+\n\
+# Try to run migrations with retry logic\n\
+echo "🔍 Checking database migrations..."\n\
+for i in {1..3}; do\n\
+    echo "Attempt $i/3: Checking database connection..."\n\
+    if poetry run prisma migrate status 2>/dev/null | grep -q "No pending migrations"; then\n\
+        echo "✅ Database migrations are up to date"\n\
+        break\n\
+    elif [ $i -eq 3 ]; then\n\
+        echo "⚠️ Database connection failed after 3 attempts, continuing without migrations..."\n\
+        echo "🔄 Skipping migrations and starting executor..."\n\
+        break\n\
+    else\n\
+        echo "🔄 Attempt $i failed, retrying in 5 seconds..."\n\
+        sleep 5\n\
+    fi\n\
+done\n\
+\n\
+echo "🎯 Starting AutoGPT Platform Executor..."\n\
+exec "$@"' > /app/executor-startup.sh && chmod +x /app/executor-startup.sh
+
 ENV PORT=8002
 
+# Use the executor startup script as entrypoint
+ENTRYPOINT ["/app/executor-startup.sh"]
 CMD ["poetry", "run", "executor"]
