@@ -102,3 +102,12 @@ RUN poetry install --no-ansi --only-root
 ENV PORT=8000
 
 CMD ["poetry", "run", "rest"]
+
+FROM server_dependencies AS executor
+
+COPY autogpt_platform/backend /app/autogpt_platform/backend
+RUN poetry install --no-ansi --only-root
+
+ENV PORT=8002
+
+CMD ["poetry", "run", "executor"]
