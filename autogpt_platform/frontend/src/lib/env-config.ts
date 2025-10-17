@@ -19,7 +19,7 @@ export function getAgptServerApiUrl(): string {
   }
 
   // Otherwise use the public URL
-  return process.env.NEXT_PUBLIC_AGPT_SERVER_URL || "http://localhost:8006/api";
+  return process.env.NEXT_PUBLIC_AGPT_SERVER_URL || "https://autogpt-platform-rest-server.onrender.com/api";
 }
 
 export function getAgptServerBaseUrl(): string {
@@ -38,7 +38,7 @@ export function getAgptWsServerUrl(): string {
   }
 
   // Otherwise use the public URL
-  return process.env.NEXT_PUBLIC_AGPT_WS_SERVER_URL || "ws://localhost:8001/ws";
+  return process.env.NEXT_PUBLIC_AGPT_WS_SERVER_URL || "wss://autogpt-platform-websocket-server.onrender.com/ws";
 }
 
 /**
@@ -53,7 +53,7 @@ export function getSupabaseUrl(): string {
   }
 
   // Otherwise use the public URL
-  return process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:8000";
+  return process.env.NEXT_PUBLIC_SUPABASE_URL || "https://jaigkkuhfliigbmwzlrq.supabase.co";
 }
 
 /**
