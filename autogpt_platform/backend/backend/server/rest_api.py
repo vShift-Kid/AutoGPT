@@ -56,7 +56,7 @@ logging.getLogger("autogpt_libs").setLevel(logging.INFO)
 
 @contextlib.contextmanager
 def launch_darkly_context():
-    if settings.config.app_env != backend.util.settings.AppEnvironment.LOCAL:
+    if settings.config.app_env != backend.util.settings.AppEnvironment.LOCAL and settings.secrets.launch_darkly_sdk_key:
         initialize_launchdarkly()
         try:
             yield

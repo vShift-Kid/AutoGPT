@@ -72,9 +72,11 @@ def initialize_launchdarkly() -> None:
 
 def shutdown_launchdarkly() -> None:
     """Shutdown the LaunchDarkly client."""
-    if ldclient.get().is_initialized():
+    global _is_initialized
+    if _is_initialized and ldclient.get().is_initialized():
         ldclient.get().close()
         logger.info("LaunchDarkly client closed successfully")
+    _is_initialized = False
 
 
 @cached(maxsize=1000, ttl_seconds=86400)  # 1000 entries, 24 hours TTL
