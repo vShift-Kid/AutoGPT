@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   productionBrowserSourceMaps: true,
+  compress: false, // Disable compression to fix transformAlgorithm error
   images: {
     domains: [
       "images.unsplash.com",
